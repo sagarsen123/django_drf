@@ -10,6 +10,7 @@ class ColorSerializer(serializers.ModelSerializer):
 class PeopleSerializer(serializers.ModelSerializer):
 
     color = ColorSerializer()
+    color_info = serializers.SerializerMethodField()
 
     class Meta:
         model = Person
@@ -17,6 +18,12 @@ class PeopleSerializer(serializers.ModelSerializer):
         # exclude =  ['name', 'age']
         # specifying level to show on output
         # depth = 1
+
+    # Can add a method to add field from instead of the model
+    def get_color_info(self, obj):
+        # grabbing data from other tables
+        color_obj = Color.objects.get(id = obj.color.id)
+        return {'color_name': color_obj.color_name, 'hex_code' : '#000'}
 
     # VALIDATING THE DATA THROUGH SERIALIZER
     def validate(self, data):
