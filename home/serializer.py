@@ -1,6 +1,21 @@
 from rest_framework import serializers
 from .models import *
 
+# model Serializers = when you want to use the functionality with model
+# serilizers.Serialzer = when you want to customize the serializer completely
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+
+
+
+
+
+
+
+
 class ColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Color
