@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from home.models import *
 from home.serializer import *
-
+from rest_framework.views import APIView
 
 @api_view(['GET', 'POST'])
 def index(request):
@@ -82,9 +82,46 @@ def people(request):
 
 
 
+class PersonApi(APIView):
 
+    def get(self, request):
+        objs = Person.objects.all()
+        seralizer = PeopleSerializer(objs, many = True)
+        print('in')
+        return Response(seralizer.data)
 
+    def post(self, request):
+        data = request.data 
+        seralizer = PeopleSerializer(data = data)
+        print('out')
+        if seralizer.is_valid():
+            seralizer.save()
+            return Response(seralizer.data)
+        return Response(seralizer.errors)
+    
+    def put(self, request):
+        data = request.data
+        obj = Person.objects.get(id = data['id'])
+        seralizer = PeopleSerializer(obj, data = data)
+        if seralizer.is_valid():
+            seralizer.save()
+            return Response(seralizer.data)
+        return Response(seralizer.errors)
 
+    def patch(self, request):
+        data = request.data
+        obj = Person.objects.get(id = data['id'])
+        seralizer = PeopleSerializer(obj, data = data, partial = True)
+        if seralizer.is_valid():
+            seralizer.save()
+            return Response(seralizer.data)
+        return Response(seralizer.errors)
+
+    def delete(self, request):
+        data = request.data
+        obj = Person.objects.get(id = data['id'])
+        obj.delete()
+        return Response({'message' : 'Person Deleted'})
 
 
 

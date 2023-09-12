@@ -5,5 +5,6 @@ from django.urls import path
 urlpatterns = [
     path('index/', index),
     path('login/', login),
-    path('person/', people)
+    path('person/', people),
+    path('personapi/',  PersonApi.as_view())
 ]

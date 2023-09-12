@@ -6,6 +6,8 @@ from .models import *
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    password = serializers.CharField()
+
 
 
 
@@ -24,7 +26,7 @@ class ColorSerializer(serializers.ModelSerializer):
 
 class PeopleSerializer(serializers.ModelSerializer):
 
-    color = ColorSerializer()
+    # color = ColorSerializer()
     color_info = serializers.SerializerMethodField()
 
     class Meta:
@@ -43,10 +45,10 @@ class PeopleSerializer(serializers.ModelSerializer):
     # VALIDATING THE DATA THROUGH SERIALIZER
     def validate(self, data):
 
-        special_charters = "!@#$%^&*()_+?-=<>/"
-        if any(C in special_charters for C in data['name']):
-            raise serializers.ValidationError('name cannot contain special characters')
+        # special_charters = "!@#$%^&*()_+?-=<>/"
+        # if any(C in special_charters for C in data['name']):
+        #     raise serializers.ValidationError('name cannot contain special characters')
 
-        if data['age'] < 18:
-            raise serializers.ValidationError('Age should be greater than 18')
+        # if data['age'] < 18:
+        #     raise serializers.ValidationError('Age should be greater than 18')
         return data
