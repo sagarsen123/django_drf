@@ -27,6 +27,8 @@ def index(request):
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def people(request):
     if request.method == 'GET':
+        # show only those entries having color entry
+        # objs = Person.objects.filter(color__isnull = False)
         objs = Person.objects.all()
         seralizer = PeopleSerializer(objs, many = True)
         print('in')
