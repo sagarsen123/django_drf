@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # serilizers.Serialzer = when you want to customize the serializer completely
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    username = serializers.CharField()
     password = serializers.CharField()
 
 
@@ -23,11 +23,16 @@ class RegisterSerializer(serializers.Serializer):
                 raise serializers.ValidationError('User name already Taken')
             
         if data['email']:
-            if User.objects.filter(username = data['email']).exists():
+            if User.objects.filter(email = data['email']).exists():
                 raise serializers.ValidationError('Email is Already registered...')
 
+        return data
 
-
+    def create(self, validated_data):
+        user = User.objects.create(username = validated_data['username'], email= validated_data["email"])
+        user.set_password(validated_data['password'])
+        user.save()
+        return validated_data
 
 
 

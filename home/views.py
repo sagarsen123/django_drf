@@ -5,8 +5,9 @@ from home.serializer import *
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 
 @api_view(['GET', 'POST'])
@@ -142,6 +143,8 @@ class PeopleViewSet(viewsets.ModelViewSet):
         return Response({'status': 200, 'data': serializer.data}, status=status.HTTP_204_NO_CONTENT)
     
 
+
+# token authentication part
 class RegisterAPI(APIView):
     def post(self, request):
         data = request.data
@@ -155,7 +158,23 @@ class RegisterAPI(APIView):
         return Response({'status': 200, 'message' : 'user created successfully'}, status.HTTP_201_CREATED)
 
 
+class LoginAPI(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = LoginSerializer(data = data)
 
+        if not serializer.is_valid():
+            return Response({'status':False, "message": serializer.errors}, status.HTTP_400_BAD_REQUEST)
+        
+
+        user = authenticate(username = serializer.data["username"] , password = serializer.data["password"])
+
+        if not user:
+            Response({'status':False, "message": "Invalid Credentials"}, status.HTTP_404_NOT_FOUND)
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({'status':200, 'message': 'logged in sucessfully', 'token' : str(token)}, status.HTTP_200_OK)
 
 
 
