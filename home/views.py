@@ -11,6 +11,8 @@ from rest_framework.authentication import TokenAuthentication
 
 from django.contrib.auth import authenticate
 
+# for pagination 
+from django.core.paginator import Paginator
 
 @api_view(['GET', 'POST'])
 def index(request):
@@ -95,9 +97,19 @@ class PersonApi(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request):
         objs = Person.objects.all()
-        seralizer = PeopleSerializer(objs, many = True)
-        print('in')
-        return Response(seralizer.data)
+
+        try:
+            # making pagination
+            page = request.GET.get('page', 1)
+            pagesize = 3
+            paginator = Paginator(objs, pagesize)
+            seralizer = PeopleSerializer(paginator.page(page), many = True)
+            # seralizer = PeopleSerializer(objs, many = True)
+            print('in')
+            return Response(seralizer.data)
+        except Exception as e:
+            return Response({'status': False, 'message': 'Invalid Page'})
+
 
     def post(self, request):
         data = request.data 
