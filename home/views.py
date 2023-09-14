@@ -3,6 +3,11 @@ from rest_framework.response import Response
 from home.models import *
 from home.serializer import *
 from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework import status
+
+from django.contrib.auth.models import User
+
 
 @api_view(['GET', 'POST'])
 def index(request):
@@ -124,7 +129,30 @@ class PersonApi(APIView):
         return Response({'message' : 'Person Deleted'})
 
 
+class PeopleViewSet(viewsets.ModelViewSet):
+    serializer_class = PeopleSerializer
+    queryset = Person.objects.all()
 
+    def list(self, request):
+        search = request.GET.get('search')
+        queryset = self.queryset
+        if search:
+            queryset = queryset.filter(name__startswith = search)
+        serializer = PeopleSerializer(queryset, many = True)
+        return Response({'status': 200, 'data': serializer.data}, status=status.HTTP_204_NO_CONTENT)
+    
+
+class RegisterAPI(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = RegisterSerializer(data = data)
+
+        if not serializer.is_valid():
+            return Response({'status':False, 'message': serializer.errors}, status.HTTP_400_BAD_REQUEST)
+        
+        serializer.save()
+
+        return Response({'status': 200, 'message' : 'user created successfully'}, status.HTTP_201_CREATED)
 
 
 

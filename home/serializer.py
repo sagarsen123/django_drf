@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import *
-
+from django.contrib.auth.models import User
 # model Serializers = when you want to use the functionality with model
 # serilizers.Serialzer = when you want to customize the serializer completely
 
@@ -11,7 +11,20 @@ class LoginSerializer(serializers.Serializer):
 
 
 
+class RegisterSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
+    def validate(self, data):
+
+        if data['username']:
+            if User.objects.filter(username = data['username']).exists():
+                raise serializers.ValidationError('User name already Taken')
+            
+        if data['email']:
+            if User.objects.filter(username = data['email']).exists():
+                raise serializers.ValidationError('Email is Already registered...')
 
 
 
@@ -44,11 +57,11 @@ class PeopleSerializer(serializers.ModelSerializer):
 
     # VALIDATING THE DATA THROUGH SERIALIZER
     def validate(self, data):
-
+        # commented beacause the error inAPIView api's
         # special_charters = "!@#$%^&*()_+?-=<>/"
-        # if any(C in special_charters for C in data['name']):
+        # if data['name'] and any(C in special_charters for C in data['name']):
         #     raise serializers.ValidationError('name cannot contain special characters')
 
-        # if data['age'] < 18:
+        # if data['age'] and data['age'] < 18:
         #     raise serializers.ValidationError('Age should be greater than 18')
         return data
