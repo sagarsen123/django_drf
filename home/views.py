@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 from django.contrib.auth import authenticate
 
@@ -89,7 +91,8 @@ def people(request):
 
 
 class PersonApi(APIView):
-
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     def get(self, request):
         objs = Person.objects.all()
         seralizer = PeopleSerializer(objs, many = True)
