@@ -14,6 +14,12 @@ from django.contrib.auth import authenticate
 # for pagination 
 from django.core.paginator import Paginator
 
+
+
+# actions enclose the things related to a specified view (apis in one class)
+# it is a decorator
+from rest_framework.decorators import action
+
 @api_view(['GET', 'POST'])
 def index(request):
     if request.method == "GET":
@@ -148,6 +154,7 @@ class PersonApi(APIView):
 class PeopleViewSet(viewsets.ModelViewSet):
     serializer_class = PeopleSerializer
     queryset = Person.objects.all()
+    http_method_names = ['get', 'post']
 
     def list(self, request):
         search = request.GET.get('search')
@@ -156,6 +163,14 @@ class PeopleViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(name__startswith = search)
         serializer = PeopleSerializer(queryset, many = True)
         return Response({'status': 200, 'data': serializer.data}, status=status.HTTP_204_NO_CONTENT)
+    
+    # this to use the action decorator
+    @action(detail=True, methods=['post'])
+    def send_mail_to_person(self, request, pk):
+        obj = Person.objects.get(pk = pk)
+        serializer = PeopleSerializer(obj)
+        print(pk)
+        return Response({'status': True, 'message': "Mail sent successfully", 'data' : serializer.data}, status=status.HTTP_200_OK)
     
 
 
